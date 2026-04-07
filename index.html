@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction to Web Authentication</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/black.min.css">
+<style>
+  :root {
+    --amber:  #f5a623;
+    --green:  #4ecb8d;
+    --purple: #a78bfa;
+    --blue:   #60a5fa;
+    --red:    #f87171;
+    --bg:     #0a0a0f;
+    --bg2:    #10101a;
+    --bg3:    #181824;
+    --border: #2a2a3a;
+    --text:   #e8e8f0;
+    --muted:  #8888a8;
+  }
+
+  .reveal-viewport { background: var(--bg); }
+  .reveal .slides section { background: transparent; }
+
+  .reveal { font-family: 'DM Sans', sans-serif; color: var(--text); }
+  .reveal h1, .reveal h2, .reveal h3 { font-family: 'Playfair Display', serif; font-weight: 700; }
+  .reveal h1 { font-size: 1.6em; color: var(--amber); line-height: 1.1; }
+  .reveal h2 { font-size: 1.1em; color: var(--amber); margin-bottom: .2em; }
+  .reveal h3 { font-size: .78em; color: var(--green); margin-bottom: .15em; }
+  .reveal p  { font-size: .56em; line-height: 1.45; color: var(--text); }
+  .reveal li { font-size: .54em; line-height: 1.45; margin-bottom: .1em; }
+  .reveal code { font-family: 'JetBrains Mono', monospace; font-size: .72em; }
+  .reveal pre  { box-shadow: none; background: var(--bg3); border: 1px solid var(--border);
+                 border-radius: 6px; padding: .3em .5em; margin: .25em 0; }
+  .reveal pre code { font-size: .52em; line-height: 1.35; background: transparent; color: #cdd6f4; }
+
+  /* ── slide chrome ── */
+  .slide-hdr {
+    display: flex; align-items: center; gap: .4em;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: .2em; margin-bottom: .3em;
+  }
+  .slide-hdr .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .42em; font-weight: 500;
+    color: var(--bg); background: var(--amber);
+    padding: .1em .4em; border-radius: 3px;
+    letter-spacing: .04em;
+  }
+  .slide-hdr h2 { margin: 0; font-size: .95em; }
+
+  /* ── two-column ── */
+  .cols   { display: grid; gap: .5em; }
+  .cols-2 { grid-template-columns: 1fr 1fr; }
+  .cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .cols-6040 { grid-template-columns: 6fr 4fr; }
+  .cols-4060 { grid-template-columns: 4fr 6fr; }
+
+  /* ── cards ── */
+  .card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 6px; padding: .35em .6em;
+  }
+  .card.amber { border-left: 3px solid var(--amber); }
+  .card.green { border-left: 3px solid var(--green); }
+  .card.purple{ border-left: 3px solid var(--purple); }
+  .card.blue  { border-left: 3px solid var(--blue); }
+  .card.red   { border-left: 3px solid var(--red); }
+  .card h3 { font-size: .64em; margin: 0 0 .12em; }
+  .card p  { font-size: .52em; margin: 0; color: #b8b8d0; }
+  .card ul { margin: 0; padding-left: 1em; }
+  .card li { font-size: .52em; color: #b8b8d0; margin-bottom: .02em; }
+
+  /* ── table ── */
+  .reveal table { width: 100%; border-collapse: collapse; font-size: .5em; }
+  .reveal table th { background: var(--bg3); color: var(--amber); font-weight: 600;
+                     padding: .2em .4em; border: 1px solid var(--border); text-align: left; }
+  .reveal table td { padding: .18em .4em; border: 1px solid var(--border); color: #ccc; }
+  .reveal table tr:nth-child(even) td { background: #0e0e18; }
+
+  /* ── accent spans ── */
+  .a  { color: var(--amber); font-weight: 600; }
+  .g  { color: var(--green); font-weight: 600; }
+  .p  { color: var(--purple); font-weight: 600; }
+  .b  { color: var(--blue); font-weight: 600; }
+  .r  { color: var(--red); font-weight: 600; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ── SVG graph diagrams ── */
+  svg.diagram { display: block; margin: 0 auto; overflow: visible; }
+
+  /* ── pill badges ── */
+  .pill {
+    display: inline-block; font-family: 'JetBrains Mono', monospace;
+    font-size: .44em; padding: .08em .4em; border-radius: 99px;
+    border: 1px solid; margin: 0 .08em;
+  }
+  .pill.amber { color: var(--amber); border-color: var(--amber); }
+  .pill.green { color: var(--green); border-color: var(--green); }
+  .pill.purple{ color: var(--purple); border-color: var(--purple); }
+  .pill.blue  { color: var(--blue); border-color: var(--blue); }
+
+  /* ── footer — hidden ── */
+  .reveal .slide-footer { display: none; }
+  /* title slide special */
+  .title-slide h1 { font-size: 1.8em; }
+  .title-slide .subtitle {
+    font-size: .7em; color: var(--green); font-family: 'DM Sans', sans-serif;
+    font-weight: 300; letter-spacing: .04em; margin: .3em 0 .6em;
+  }
+  .title-slide .meta { font-size: .48em; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+
+  /* reduce default margins */
+  .reveal ul, .reveal ol { margin: .15em 0 .15em 1em; }
+  .reveal .slides > section { display: flex !important; flex-direction: column !important; overflow-y: auto !important; align-items: stretch !important; justify-content: flex-start !important; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+
+<!-- ═══════════════════════════════ SLIDE 01 — TITLE ═══════════════════════════════ -->
+<section class="title-slide" data-background-color="#0a0a0f">
+  <div style="text-align:left; max-width:820px; margin:0 auto; padding: 1em 0;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:.5em; color:var(--muted); margin-bottom:.4em; letter-spacing:.1em;">
+      TECHNICAL PRESENTATION
+    </div>
+    <h1>Introduction to<br>Web Authentication</h1>
+    <div class="subtitle">Sessions, Tokens, OAuth &amp; Security Best Practices</div>
+    <div style="width:60px; height:3px; background:var(--amber); margin-bottom:1.4em;"></div>
+    <div class="meta">cookies &middot; JWT &middot; OAuth 2.0 &middot; bcrypt &middot; MFA &middot; RBAC &middot; CSRF &middot; CORS</div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 02 — AGENDA ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">02</span><h2>Agenda</h2></div>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Foundations</h3>
+      <ul>
+        <li>Authentication vs Authorisation</li>
+        <li>Session-based authentication</li>
+        <li>Cookies deep dive</li>
+        <li>JWT &mdash; JSON Web Tokens</li>
+      </ul>
+    </div>
+    <div class="card green">
+      <h3>Protocols &amp; Standards</h3>
+      <ul>
+        <li>JWT in practice (access &amp; refresh tokens)</li>
+        <li>OAuth 2.0 grant types &amp; PKCE</li>
+        <li>OAuth 2.0 with Express &amp; Passport.js</li>
+        <li>SSO &amp; Identity Providers (SAML, OIDC)</li>
+      </ul>
+    </div>
+    <div class="card purple">
+      <h3>Credentials &amp; Access</h3>
+      <ul>
+        <li>Password hashing (bcrypt, scrypt, argon2)</li>
+        <li>Multi-factor authentication &amp; passkeys</li>
+        <li>Role-based access control (RBAC)</li>
+        <li>Token storage &amp; security trade-offs</li>
+      </ul>
+    </div>
+    <div class="card blue">
+      <h3>Defence &amp; Hardening</h3>
+      <ul>
+        <li>CSRF protection patterns</li>
+        <li>CORS &amp; credentials</li>
+        <li>Session management &amp; invalidation</li>
+        <li>Common vulnerabilities &amp; mitigations</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 03 — AUTHN vs AUTHZ ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">03</span><h2>Authentication vs Authorisation</h2></div>
+  <p>Two distinct concerns that are often conflated. <span class="a">Authentication</span> proves <em>who you are</em>; <span class="g">authorisation</span> determines <em>what you can do</em>. Every secure system needs both.</p>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Authentication (AuthN)</h3>
+      <ul>
+        <li><span class="a">Identity verification</span> &mdash; "Who is this user?"</li>
+        <li>Occurs <em>before</em> authorisation</li>
+        <li>Mechanisms: passwords, tokens, biometrics, certificates</li>
+        <li>Result: a verified identity (user ID, session, JWT)</li>
+        <li>HTTP <code>401 Unauthorized</code> = unauthenticated</li>
+      </ul>
+    </div>
+    <div class="card green">
+      <h3>Authorisation (AuthZ)</h3>
+      <ul>
+        <li><span class="g">Permission checking</span> &mdash; "Can this user do X?"</li>
+        <li>Occurs <em>after</em> authentication</li>
+        <li>Mechanisms: RBAC, ABAC, ACLs, policies</li>
+        <li>Result: allow or deny the requested action</li>
+        <li>HTTP <code>403 Forbidden</code> = unauthorised</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card purple" style="margin-top:.3em;">
+    <h3>Where Each Applies</h3>
+    <p><span class="a">AuthN</span> at the front door: login forms, API key validation, SSO callbacks, token verification middleware. <span class="g">AuthZ</span> at every resource: route guards, database row-level security, feature flags, admin panels. A user can be authenticated but still <span class="r">unauthorised</span> to access a resource.</p>
+  </div>
+<pre><code class="language-javascript">// Express: AuthN middleware runs first, then AuthZ
+app.get('/admin/users', authenticate, authorise('admin'), (req, res) => {
+  // authenticate() verifies the JWT/session — sets req.user
+  // authorise('admin') checks req.user.role === 'admin'
+  res.json(await User.findAll());
+});</code></pre>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 04 — SESSION-BASED AUTH ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">04</span><h2>Session-Based Authentication</h2></div>
+  <p>The classic approach: the server creates a <span class="a">session</span> after login, stores it server-side, and sends a <span class="g">session ID</span> cookie to the browser. Every subsequent request includes the cookie automatically.</p>
+  <svg class="diagram" viewBox="0 0 900 190" width="820">
+    <rect x="30" y="20" width="140" height="50" rx="5" fill="#1a1a2a" stroke="#60a5fa" stroke-width="1.5"/>
+    <text x="100" y="50" text-anchor="middle" fill="#60a5fa" font-family="Playfair Display,serif" font-size="14" font-weight="700">Browser</text>
+    <rect x="380" y="20" width="140" height="50" rx="5" fill="#1a1a2a" stroke="#4ecb8d" stroke-width="1.5"/>
+    <text x="450" y="50" text-anchor="middle" fill="#4ecb8d" font-family="Playfair Display,serif" font-size="14" font-weight="700">Express</text>
+    <rect x="720" y="20" width="140" height="50" rx="5" fill="#1a1a2a" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="790" y="50" text-anchor="middle" fill="#a78bfa" font-family="Playfair Display,serif" font-size="14" font-weight="700">Session Store</text>
+    <!-- arrows -->
+    <line x1="170" y1="85" x2="380" y2="85" stroke="#f5a623" stroke-width="1.2" marker-end="url(#arrA)"/>
+    <text x="275" y="80" text-anchor="middle" fill="#f5a623" font-family="JetBrains Mono,monospace" font-size="10">POST /login (credentials)</text>
+    <line x1="520" y1="100" x2="720" y2="100" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#arrP)"/>
+    <text x="620" y="95" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono,monospace" font-size="10">store session</text>
+    <line x1="380" y1="130" x2="170" y2="130" stroke="#4ecb8d" stroke-width="1.2" marker-end="url(#arrG)"/>
+    <text x="275" y="125" text-anchor="middle" fill="#4ecb8d" font-family="JetBrains Mono,monospace" font-size="10">Set-Cookie: sid=abc123</text>
+    <line x1="170" y1="160" x2="380" y2="160" stroke="#60a5fa" stroke-width="1.2" marker-end="url(#arrB)"/>
+    <text x="275" y="155" text-anchor="middle" fill="#60a5fa" font-family="JetBrains Mono,monospace" font-size="10">GET /dashboard (Cookie: sid=abc123)</text>
+    <defs>
+      <marker id="arrA" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#f5a623"/></marker>
+      <marker id="arrG" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#4ecb8d"/></marker>
+      <marker id="arrP" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#a78bfa"/></marker>
+      <marker id="arrB" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#60a5fa"/></marker>
+    </defs>
+  </svg>
+<pre><code class="language-javascript">const session = require('express-session');
+const RedisStore = require('connect-redis').default;
+
+app.use(session({
+  store: new RedisStore({ client: redisClient }),
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: true, httpOnly: true, maxAge: 1800000 } // 30 min
+}));
+
+app.post('/login', async (req, res) => {
+  const user = await User.findByEmail(req.body.email);
+  if (user && await bcrypt.compare(req.body.password, user.hash)) {
+    req.session.userId = user.id;        // session stored in Redis
+    return res.redirect('/dashboard');
+  }
+  res.status(401).json({ error: 'Invalid credentials' });
+});</code></pre>
+  <div class="cols cols-3" style="margin-top:.2em;">
+    <div class="card green"><h3>Pros</h3><p>Simple mental model, easy revocation (delete session), cookie sent automatically, works with any framework.</p></div>
+    <div class="card red"><h3>Cons</h3><p>Server-side state, requires shared store in clustered environments, CSRF-vulnerable if cookies are used.</p></div>
+    <div class="card blue"><h3>Stores</h3><p><code>connect-redis</code>, <code>connect-mongo</code>, <code>connect-pg-simple</code>, <code>memorystore</code> (dev only).</p></div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 05 — COOKIES DEEP DIVE ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">05</span><h2>Cookies Deep Dive</h2></div>
+  <p>Cookies are the transport layer for session IDs, CSRF tokens, and sometimes JWTs. Understanding every attribute is critical for security.</p>
+  <table>
+    <tr><th>Attribute</th><th>Purpose</th><th>Recommended Value</th></tr>
+    <tr><td><code>HttpOnly</code></td><td>Prevents JavaScript access via <code>document.cookie</code></td><td><span class="g">Always set</span> for auth cookies</td></tr>
+    <tr><td><code>Secure</code></td><td>Cookie only sent over HTTPS</td><td><span class="g">Always set</span> in production</td></tr>
+    <tr><td><code>SameSite</code></td><td>Controls cross-origin cookie sending</td><td><span class="a">Lax</span> (default) or <span class="g">Strict</span></td></tr>
+    <tr><td><code>Domain</code></td><td>Which domains receive the cookie</td><td>Omit to restrict to exact origin</td></tr>
+    <tr><td><code>Path</code></td><td>URL path scope</td><td><code>/</code> for session cookies</td></tr>
+    <tr><td><code>Max-Age / Expires</code></td><td>Lifetime — omit for session cookies (cleared on browser close)</td><td>30 min for sessions, 7-30 days for refresh</td></tr>
+    <tr><td><code>__Host-</code> prefix</td><td>Requires <code>Secure</code>, no <code>Domain</code>, path <code>/</code></td><td>Use for highest security cookies</td></tr>
+  </table>
+<pre><code class="language-http">Set-Cookie: __Host-sid=abc123; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=1800</code></pre>
+  <div class="cols cols-3" style="margin-top:.2em;">
+    <div class="card amber">
+      <h3>SameSite=Strict</h3>
+      <p>Cookie <span class="r">never</span> sent on cross-site requests. Breaks OAuth redirects and inbound links that expect a logged-in session.</p>
+    </div>
+    <div class="card green">
+      <h3>SameSite=Lax</h3>
+      <p>Sent on top-level navigations (GET) but <span class="r">not</span> on cross-site POST/fetch. Good balance of usability and CSRF protection.</p>
+    </div>
+    <div class="card purple">
+      <h3>SameSite=None</h3>
+      <p>Sent on all cross-site requests. <span class="r">Requires <code>Secure</code></span>. Needed for cross-origin APIs and third-party embeds.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 06 — JWT STRUCTURE ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">06</span><h2>JWT &mdash; JSON Web Tokens</h2></div>
+  <p>A JWT is a compact, URL-safe token with three Base64URL-encoded parts separated by dots: <span class="a">header</span>.<span class="g">payload</span>.<span class="p">signature</span>. The server can verify the token without storing state.</p>
+  <div class="cols cols-3">
+    <div class="card amber">
+      <h3>Header</h3>
+<pre><code class="language-json">{
+  "alg": "HS256",
+  "typ": "JWT"
+}</code></pre>
+      <p>Declares the signing algorithm and token type.</p>
+    </div>
+    <div class="card green">
+      <h3>Payload (Claims)</h3>
+<pre><code class="language-json">{
+  "sub": "user_4821",
+  "email": "alice@example.com",
+  "role": "admin",
+  "iat": 1712505600,
+  "exp": 1712509200
+}</code></pre>
+      <p>Registered claims: <code>sub</code>, <code>iss</code>, <code>aud</code>, <code>exp</code>, <code>iat</code>, <code>nbf</code>, <code>jti</code>.</p>
+    </div>
+    <div class="card purple">
+      <h3>Signature</h3>
+<pre><code class="language-text">HMACSHA256(
+  base64url(header) + "." +
+  base64url(payload),
+  secret
+)</code></pre>
+      <p>Integrity check. Tampered tokens fail verification.</p>
+    </div>
+  </div>
+  <div class="card blue" style="margin-top:.3em;">
+    <h3>Signing Algorithms</h3>
+    <table>
+      <tr><th>Algorithm</th><th>Type</th><th>Key</th><th>Use Case</th></tr>
+      <tr><td><code>HS256</code></td><td>Symmetric HMAC</td><td>Shared secret</td><td>Single-server APIs</td></tr>
+      <tr><td><code>RS256</code></td><td>Asymmetric RSA</td><td>Private key signs, public key verifies</td><td>Distributed systems, OIDC</td></tr>
+      <tr><td><code>ES256</code></td><td>Asymmetric ECDSA</td><td>Smaller keys, faster signing</td><td>Mobile, IoT, performance-critical</td></tr>
+      <tr><td><code>none</code></td><td>No signature</td><td>&mdash;</td><td><span class="r">NEVER use in production</span></td></tr>
+    </table>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 07 — JWT IN PRACTICE ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">07</span><h2>JWT in Practice</h2></div>
+  <p>A production JWT flow uses short-lived <span class="a">access tokens</span> paired with longer-lived <span class="g">refresh tokens</span>. The access token authorises API calls; the refresh token obtains new access tokens without re-authentication.</p>
+  <div class="cols cols-2">
+    <div>
+<pre><code class="language-javascript">const jwt = require('jsonwebtoken');
+const SECRET = process.env.JWT_SECRET;
+
+// Issue tokens after successful login
+function issueTokens(user) {
+  const accessToken = jwt.sign(
+    { sub: user.id, role: user.role },
+    SECRET,
+    { expiresIn: '15m' }
+  );
+  const refreshToken = jwt.sign(
+    { sub: user.id, type: 'refresh' },
+    SECRET,
+    { expiresIn: '7d' }
+  );
+  return { accessToken, refreshToken };
+}
+
+app.post('/login', async (req, res) => {
+  const user = await authenticate(req.body);
+  if (!user) return res.status(401).json({ error: 'Bad credentials' });
+  const tokens = issueTokens(user);
+  // Store refresh token hash in DB for revocation
+  await RefreshToken.create({ userId: user.id,
+    hash: hashToken(tokens.refreshToken) });
+  res.json(tokens);
+});</code></pre>
+    </div>
+    <div>
+<pre><code class="language-javascript">// Middleware: verify access token
+function authenticate(req, res, next) {
+  const header = req.headers.authorization;
+  if (!header?.startsWith('Bearer '))
+    return res.status(401).json({ error: 'No token' });
+
+  try {
+    req.user = jwt.verify(header.slice(7), SECRET);
+    next();
+  } catch (err) {
+    if (err.name === 'TokenExpiredError')
+      return res.status(401).json({ error: 'Token expired' });
+    res.status(401).json({ error: 'Invalid token' });
+  }
+}
+
+// Refresh endpoint
+app.post('/refresh', async (req, res) => {
+  const { refreshToken } = req.body;
+  const payload = jwt.verify(refreshToken, SECRET);
+  const stored = await RefreshToken.findOne({
+    userId: payload.sub,
+    hash: hashToken(refreshToken)
+  });
+  if (!stored) return res.status(403).json({ error: 'Revoked' });
+  const user = await User.findById(payload.sub);
+  res.json(issueTokens(user));
+});</code></pre>
+    </div>
+  </div>
+  <div class="cols cols-3" style="margin-top:.2em;">
+    <div class="card amber"><h3>Access Token</h3><p>Short-lived (5-15 min), stateless, sent as <code>Authorization: Bearer &lt;token&gt;</code>.</p></div>
+    <div class="card green"><h3>Refresh Token</h3><p>Long-lived (7-30 days), stored server-side (DB/Redis), enables silent re-auth.</p></div>
+    <div class="card red"><h3>Token Rotation</h3><p>Issue a new refresh token on every use. Invalidate the old one. Detects token reuse (theft).</p></div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 08 — OAUTH 2.0 ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">08</span><h2>OAuth 2.0</h2></div>
+  <p>OAuth 2.0 is an <span class="a">authorisation framework</span> that lets a third-party application access resources on behalf of a user <em>without</em> sharing the user's password. It defines several <span class="g">grant types</span> for different scenarios.</p>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Authorization Code + PKCE</h3>
+      <ul>
+        <li>Most secure flow for web and mobile apps</li>
+        <li>User redirected to authorisation server</li>
+        <li>Server returns a short-lived <span class="a">auth code</span></li>
+        <li>App exchanges code + <span class="p">code_verifier</span> for tokens</li>
+        <li>PKCE prevents code interception attacks</li>
+      </ul>
+    </div>
+    <div class="card green">
+      <h3>Client Credentials</h3>
+      <ul>
+        <li>Machine-to-machine (no user involved)</li>
+        <li>App sends <code>client_id</code> + <code>client_secret</code></li>
+        <li>Returns access token directly</li>
+        <li>Used for service accounts, cron jobs, microservices</li>
+      </ul>
+    </div>
+  </div>
+  <svg class="diagram" viewBox="0 0 900 200" width="820">
+    <rect x="20" y="10" width="120" height="40" rx="5" fill="#1a1a2a" stroke="#60a5fa" stroke-width="1.2"/>
+    <text x="80" y="35" text-anchor="middle" fill="#60a5fa" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">User/Browser</text>
+    <rect x="320" y="10" width="120" height="40" rx="5" fill="#1a1a2a" stroke="#4ecb8d" stroke-width="1.2"/>
+    <text x="380" y="35" text-anchor="middle" fill="#4ecb8d" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">Your App</text>
+    <rect x="620" y="10" width="160" height="40" rx="5" fill="#1a1a2a" stroke="#f5a623" stroke-width="1.2"/>
+    <text x="700" y="35" text-anchor="middle" fill="#f5a623" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">Auth Server (Google)</text>
+    <!-- step 1 -->
+    <line x1="140" y1="65" x2="320" y2="65" stroke="#60a5fa" stroke-width="1" marker-end="url(#oaA)"/>
+    <text x="230" y="60" text-anchor="middle" fill="#60a5fa" font-family="JetBrains Mono,monospace" font-size="9">1. Click "Login with Google"</text>
+    <!-- step 2 -->
+    <line x1="440" y1="80" x2="620" y2="80" stroke="#4ecb8d" stroke-width="1" marker-end="url(#oaG)"/>
+    <text x="530" y="75" text-anchor="middle" fill="#4ecb8d" font-family="JetBrains Mono,monospace" font-size="9">2. Redirect to /authorize</text>
+    <!-- step 3 -->
+    <line x1="620" y1="100" x2="140" y2="100" stroke="#f5a623" stroke-width="1" marker-end="url(#oaAr)"/>
+    <text x="380" y="95" text-anchor="middle" fill="#f5a623" font-family="JetBrains Mono,monospace" font-size="9">3. User consents, redirected with auth code</text>
+    <!-- step 4 -->
+    <line x1="440" y1="130" x2="620" y2="130" stroke="#a78bfa" stroke-width="1" marker-end="url(#oaP)"/>
+    <text x="530" y="125" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono,monospace" font-size="9">4. Exchange code + PKCE for tokens</text>
+    <!-- step 5 -->
+    <line x1="620" y1="150" x2="440" y2="150" stroke="#f87171" stroke-width="1" marker-end="url(#oaR)"/>
+    <text x="530" y="145" text-anchor="middle" fill="#f87171" font-family="JetBrains Mono,monospace" font-size="9">5. Access token + ID token</text>
+    <defs>
+      <marker id="oaA" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#60a5fa"/></marker>
+      <marker id="oaG" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#4ecb8d"/></marker>
+      <marker id="oaAr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#f5a623"/></marker>
+      <marker id="oaP" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#a78bfa"/></marker>
+      <marker id="oaR" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#f87171"/></marker>
+    </defs>
+  </svg>
+  <div class="card red" style="margin-top:.2em;">
+    <h3>Deprecated: Implicit Grant</h3>
+    <p>The implicit flow returned tokens directly in the URL fragment. It is <span class="r">no longer recommended</span> &mdash; use Authorization Code + PKCE instead. URL fragments leak through browser history, referer headers, and proxy logs.</p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 09 — OAUTH WITH EXPRESS ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">09</span><h2>OAuth 2.0 with Express</h2></div>
+  <p><span class="a">Passport.js</span> abstracts OAuth into pluggable strategies. Each strategy handles the redirect, callback, and token exchange. You just configure credentials and a verify callback.</p>
+  <div class="cols cols-2">
+    <div>
+<pre><code class="language-javascript">const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: '/auth/google/callback'
+  },
+  async (accessToken, refreshToken, profile, done) => {
+    // Find or create user in database
+    let user = await User.findOne({
+      where: { googleId: profile.id }
+    });
+    if (!user) {
+      user = await User.create({
+        googleId: profile.id,
+        email: profile.emails[0].value,
+        name: profile.displayName,
+        avatar: profile.photos[0].value
+      });
+    }
+    return done(null, user);
+  }
+));</code></pre>
+    </div>
+    <div>
+<pre><code class="language-javascript">// Serialisation for session persistence
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser(async (id, done) => {
+  const user = await User.findByPk(id);
+  done(null, user);
+});
+
+// Mount middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Routes
+app.get('/auth/google',
+  passport.authenticate('google', {
+    scope: ['profile', 'email']
+  })
+);
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', {
+    failureRedirect: '/login'
+  }),
+  (req, res) => res.redirect('/dashboard')
+);
+
+// GitHub strategy follows the same pattern
+// npm install passport-github2
+// passport.use(new GitHubStrategy({ ... }))</code></pre>
+    </div>
+  </div>
+  <div class="cols cols-2" style="margin-top:.2em;">
+    <div class="card amber"><h3>Multiple Providers</h3><p>Add strategies for GitHub, Facebook, Microsoft, Apple, etc. Link accounts by matching email or storing provider IDs per user.</p></div>
+    <div class="card green"><h3>Callback Security</h3><p>Always validate the <code>state</code> parameter to prevent CSRF. Use HTTPS. Restrict redirect URIs in the provider's console.</p></div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 10 — PASSWORD HASHING ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">10</span><h2>Password Hashing</h2></div>
+  <p>Never store passwords in plain text. Use a <span class="a">slow, salted, one-way hash</span> function. The three accepted algorithms are <span class="g">bcrypt</span>, <span class="p">scrypt</span>, and <span class="b">argon2</span>.</p>
+  <div class="cols cols-2">
+    <div>
+      <table>
+        <tr><th>Algorithm</th><th>CPU-Hard</th><th>Memory-Hard</th><th>Output</th></tr>
+        <tr><td><span class="g">bcrypt</span></td><td>Yes (cost factor)</td><td>No (4 KB)</td><td>60-char string with embedded salt</td></tr>
+        <tr><td><span class="p">scrypt</span></td><td>Yes (N)</td><td>Yes (r, p)</td><td>Configurable, built into Node crypto</td></tr>
+        <tr><td><span class="b">argon2id</span></td><td>Yes (iterations)</td><td>Yes (memory)</td><td>PHC-format string, OWASP recommended</td></tr>
+      </table>
+<pre><code class="language-javascript">// bcrypt — most widely used
+const bcrypt = require('bcrypt');
+const SALT_ROUNDS = 12; // ~250ms on modern hardware
+
+async function register(email, password) {
+  const hash = await bcrypt.hash(password, SALT_ROUNDS);
+  // hash = $2b$12$LJ3m4ys...(60 chars, salt embedded)
+  await User.create({ email, passwordHash: hash });
+}
+
+async function login(email, password) {
+  const user = await User.findByEmail(email);
+  if (!user) return null;
+  // Constant-time comparison prevents timing attacks
+  const valid = await bcrypt.compare(password, user.passwordHash);
+  return valid ? user : null;
+}</code></pre>
+    </div>
+    <div>
+<pre><code class="language-javascript">// argon2 — OWASP first choice
+const argon2 = require('argon2');
+
+const hash = await argon2.hash(password, {
+  type: argon2.argon2id,
+  memoryCost: 65536,  // 64 MB
+  timeCost: 3,        // iterations
+  parallelism: 4
+});
+// $argon2id$v=19$m=65536,t=3,p=4$salt$hash
+
+const valid = await argon2.verify(hash, password);</code></pre>
+<pre><code class="language-javascript">// scrypt — built into Node, no npm package needed
+const { scrypt, randomBytes } = require('crypto');
+const { promisify } = require('util');
+const scryptAsync = promisify(scrypt);
+
+async function hashPassword(password) {
+  const salt = randomBytes(16).toString('hex');
+  const derived = await scryptAsync(password, salt, 64);
+  return `${salt}:${derived.toString('hex')}`;
+}</code></pre>
+      <div class="card red" style="margin-top:.2em;">
+        <h3>Timing Attacks</h3>
+        <p>String comparison (<code>===</code>) short-circuits on first mismatch. <code>bcrypt.compare</code> and <code>argon2.verify</code> use constant-time comparison internally.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 11 — MFA ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">11</span><h2>Multi-Factor Authentication</h2></div>
+  <p>MFA requires <span class="a">two or more factors</span> from different categories: <span class="g">something you know</span> (password), <span class="p">something you have</span> (device/key), <span class="b">something you are</span> (biometrics).</p>
+  <div class="cols cols-3">
+    <div class="card green">
+      <h3>TOTP (Time-Based OTP)</h3>
+      <ul>
+        <li>Shared secret + current time &rarr; 6-digit code</li>
+        <li>RFC 6238 &mdash; 30-second windows</li>
+        <li>Google Authenticator, Authy, 1Password</li>
+        <li>Server stores the shared secret per user</li>
+      </ul>
+<pre><code class="language-javascript">const { authenticator } = require('otplib');
+// Setup: generate secret + QR code
+const secret = authenticator.generateSecret();
+const uri = authenticator.keyuri(
+  user.email, 'MyApp', secret
+);
+// Verify code from user
+const valid = authenticator.verify({
+  token: req.body.code, secret: user.totpSecret
+});</code></pre>
+    </div>
+    <div class="card purple">
+      <h3>WebAuthn / Passkeys</h3>
+      <ul>
+        <li>Public-key cryptography, phishing-resistant</li>
+        <li>Authenticator creates key pair per site</li>
+        <li>Server stores public key only</li>
+        <li>Browser API: <code>navigator.credentials</code></li>
+        <li>Passkeys sync across devices via iCloud/Google</li>
+      </ul>
+<pre><code class="language-javascript">const { generateRegistrationOptions,
+        verifyRegistrationResponse
+} = require('@simplewebauthn/server');
+
+const options = await generateRegistrationOptions({
+  rpName: 'MyApp',
+  rpID: 'example.com',
+  userID: user.id,
+  userName: user.email
+});</code></pre>
+    </div>
+    <div class="card blue">
+      <h3>Recovery &amp; Fallbacks</h3>
+      <ul>
+        <li><span class="a">Recovery codes</span> &mdash; one-time use, store hashed</li>
+        <li><span class="r">SMS OTP</span> &mdash; weakest factor (SIM swap attacks)</li>
+        <li>Email magic links &mdash; acceptable as second step</li>
+        <li>Hardware keys (YubiKey) &mdash; strongest physical factor</li>
+      </ul>
+      <div class="card red" style="margin-top:.2em;">
+        <h3>SMS Risks</h3>
+        <p>NIST SP 800-63B discourages SMS as sole second factor. SIM swapping, SS7 interception, and social engineering make SMS vulnerable.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 12 — CSRF ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">12</span><h2>CSRF Protection</h2></div>
+  <p><span class="r">Cross-Site Request Forgery</span> tricks a user's browser into making an authenticated request to your site from a malicious page. The browser automatically includes cookies, so the request appears legitimate.</p>
+  <div class="cols cols-3">
+    <div class="card amber">
+      <h3>Synchronizer Token Pattern</h3>
+      <ul>
+        <li>Server generates a unique CSRF token per session</li>
+        <li>Token embedded in forms as hidden field</li>
+        <li>Server validates token on every state-changing request</li>
+        <li>Token not in cookies &mdash; attacker can't read it</li>
+      </ul>
+<pre><code class="language-javascript">const csrf = require('csurf');
+app.use(csrf({ cookie: false })); // session-based
+
+app.get('/form', (req, res) => {
+  res.render('form', {
+    csrfToken: req.csrfToken()
+  });
+});
+// Template: &lt;input type="hidden"
+//   name="_csrf" value="{{csrfToken}}"&gt;</code></pre>
+    </div>
+    <div class="card green">
+      <h3>SameSite Cookies</h3>
+      <ul>
+        <li><code>SameSite=Lax</code> blocks cross-site POST</li>
+        <li>No extra tokens needed for simple cases</li>
+        <li>Supported in all modern browsers</li>
+        <li>Not sufficient alone for <code>SameSite=None</code> APIs</li>
+      </ul>
+<pre><code class="language-javascript">app.use(session({
+  cookie: {
+    sameSite: 'lax',  // default in modern browsers
+    secure: true,
+    httpOnly: true
+  }
+}));</code></pre>
+    </div>
+    <div class="card purple">
+      <h3>Double-Submit Cookie</h3>
+      <ul>
+        <li>Set a random token in a cookie <em>and</em> a header</li>
+        <li>Server compares cookie value vs header value</li>
+        <li>Attacker can send cookie but can't read/set the header</li>
+        <li>Stateless &mdash; no server-side token storage</li>
+      </ul>
+<pre><code class="language-javascript">// Client sends:
+// Cookie: csrf=abc123
+// X-CSRF-Token: abc123
+app.use((req, res, next) => {
+  if (['POST','PUT','DELETE'].includes(req.method)) {
+    if (req.cookies.csrf !== req.headers['x-csrf-token'])
+      return res.status(403).json({ error: 'CSRF' });
+  }
+  next();
+});</code></pre>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 13 — CORS ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">13</span><h2>CORS &amp; Credentials</h2></div>
+  <p><span class="a">Cross-Origin Resource Sharing</span> controls which domains can call your API from a browser. Without CORS headers, the <span class="r">same-origin policy</span> blocks cross-origin fetch/XHR requests.</p>
+  <div class="cols cols-2">
+    <div>
+<pre><code class="language-javascript">const cors = require('cors');
+
+// Simple: allow specific origin with credentials
+app.use(cors({
+  origin: 'https://app.example.com',
+  credentials: true, // Access-Control-Allow-Credentials
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  maxAge: 86400 // preflight cache (24h)
+}));
+
+// Dynamic origin (multiple allowed origins)
+const allowedOrigins = [
+  'https://app.example.com',
+  'https://admin.example.com'
+];
+
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin))
+      cb(null, true);
+    else
+      cb(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+}));</code></pre>
+    </div>
+    <div>
+      <table>
+        <tr><th>Header</th><th>Purpose</th></tr>
+        <tr><td><code>Access-Control-Allow-Origin</code></td><td>Which origin(s) can access the response</td></tr>
+        <tr><td><code>Access-Control-Allow-Credentials</code></td><td>Allow cookies / Authorization header</td></tr>
+        <tr><td><code>Access-Control-Allow-Methods</code></td><td>Permitted HTTP methods (preflight)</td></tr>
+        <tr><td><code>Access-Control-Allow-Headers</code></td><td>Permitted request headers (preflight)</td></tr>
+        <tr><td><code>Access-Control-Max-Age</code></td><td>Cache preflight response (seconds)</td></tr>
+      </table>
+      <div class="card red" style="margin-top:.3em;">
+        <h3>Common Pitfalls</h3>
+        <ul>
+          <li><code>Access-Control-Allow-Origin: *</code> <span class="r">cannot</span> be used with <code>credentials: true</code></li>
+          <li>Preflight (OPTIONS) must return 2xx with CORS headers</li>
+          <li><code>withCredentials: true</code> needed on fetch/XHR for cookies</li>
+          <li>CORS is browser-enforced &mdash; curl/Postman bypass it entirely</li>
+        </ul>
+      </div>
+      <div class="card blue" style="margin-top:.2em;">
+        <h3>Preflight Request</h3>
+        <p>Browser sends an <code>OPTIONS</code> request before any non-simple request (custom headers, PUT/DELETE, JSON content-type). If CORS headers are missing, the actual request is blocked.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 14 — RBAC ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">14</span><h2>Role-Based Access Control (RBAC)</h2></div>
+  <p>RBAC assigns <span class="a">permissions</span> to <span class="g">roles</span>, then assigns roles to users. It simplifies permission management &mdash; you update the role definition, not individual user records.</p>
+  <div class="cols cols-6040">
+    <div>
+      <table>
+        <tr><th>Role</th><th>Permissions</th></tr>
+        <tr><td><span class="b">viewer</span></td><td><code>read:articles</code>, <code>read:comments</code></td></tr>
+        <tr><td><span class="g">editor</span></td><td>viewer + <code>write:articles</code>, <code>write:comments</code></td></tr>
+        <tr><td><span class="a">admin</span></td><td>editor + <code>manage:users</code>, <code>manage:settings</code></td></tr>
+        <tr><td><span class="r">superadmin</span></td><td>All permissions, can manage roles themselves</td></tr>
+      </table>
+<pre><code class="language-javascript">// Permission model (DB schema)
+// users       -> user_roles -> roles -> role_permissions -> permissions
+// Many-to-many relationships allow flexible assignment
+
+const ROLES = {
+  viewer:     ['read:articles', 'read:comments'],
+  editor:     ['read:articles', 'read:comments',
+               'write:articles', 'write:comments'],
+  admin:      ['read:articles', 'read:comments',
+               'write:articles', 'write:comments',
+               'manage:users', 'manage:settings'],
+};</code></pre>
+    </div>
+    <div>
+<pre><code class="language-javascript">// Middleware guard factory
+function requirePermission(...perms) {
+  return (req, res, next) => {
+    const userPerms = ROLES[req.user.role] || [];
+    const hasAll = perms.every(p =>
+      userPerms.includes(p)
+    );
+    if (!hasAll) {
+      return res.status(403).json({
+        error: 'Insufficient permissions'
+      });
+    }
+    next();
+  };
+}
+
+// Usage in routes
+app.get('/articles',
+  authenticate,
+  requirePermission('read:articles'),
+  articleController.list
+);
+
+app.delete('/users/:id',
+  authenticate,
+  requirePermission('manage:users'),
+  userController.delete
+);</code></pre>
+      <div class="card purple" style="margin-top:.2em;">
+        <h3>Beyond RBAC</h3>
+        <p><span class="p">ABAC</span> (attribute-based) uses policies with user attributes, resource properties, and environment context. Libraries: <code>casl</code>, <code>casbin</code>, OPA.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 15 — TOKEN STORAGE ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">15</span><h2>Token Storage &amp; Security</h2></div>
+  <p>Where you store tokens in the browser determines which attacks you're vulnerable to. There is <span class="r">no perfect solution</span> &mdash; only trade-offs between <span class="a">XSS</span> and <span class="g">CSRF</span>.</p>
+  <table>
+    <tr><th>Storage</th><th>XSS Risk</th><th>CSRF Risk</th><th>Auto-Sent</th><th>Recommendation</th></tr>
+    <tr><td><code>localStorage</code></td><td><span class="r">HIGH</span> &mdash; JS can read it</td><td>None</td><td>No (manual header)</td><td>Avoid for auth tokens</td></tr>
+    <tr><td><code>sessionStorage</code></td><td><span class="r">HIGH</span> &mdash; JS can read it</td><td>None</td><td>No</td><td>Avoid for auth tokens</td></tr>
+    <tr><td><code>HttpOnly cookie</code></td><td><span class="g">LOW</span> &mdash; JS can't read it</td><td><span class="a">Medium</span></td><td>Yes (automatic)</td><td>Best for session/refresh tokens</td></tr>
+    <tr><td>In-memory (JS variable)</td><td><span class="a">Medium</span> &mdash; XSS can access</td><td>None</td><td>No</td><td>OK for short-lived access tokens</td></tr>
+  </table>
+  <div class="cols cols-2" style="margin-top:.3em;">
+    <div class="card amber">
+      <h3>Recommended Pattern</h3>
+      <ul>
+        <li><span class="g">Refresh token</span> in <code>HttpOnly</code>, <code>Secure</code>, <code>SameSite=Strict</code> cookie</li>
+        <li><span class="a">Access token</span> in memory (JS variable) — never persisted</li>
+        <li>On page load: call <code>/refresh</code> to get a new access token</li>
+        <li>Access token attached to API calls via <code>Authorization</code> header</li>
+        <li>Short expiry (5-15 min) limits the window of XSS exploitation</li>
+      </ul>
+    </div>
+    <div class="card red">
+      <h3>XSS vs CSRF Trade-off</h3>
+      <ul>
+        <li><span class="r">XSS</span> (cross-site scripting) &mdash; attacker injects JS that reads tokens from <code>localStorage</code> or makes API calls</li>
+        <li><span class="a">CSRF</span> &mdash; attacker tricks browser into sending cookies to your API from a malicious page</li>
+        <li>HttpOnly cookies mitigate XSS token theft but open CSRF surface</li>
+        <li>CSRF is easier to defend against than XSS &mdash; prefer cookie storage</li>
+        <li><span class="g">Defence in depth</span>: CSP headers + SameSite cookies + CSRF tokens</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 16 — SESSION MANAGEMENT ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">16</span><h2>Session Management</h2></div>
+  <p>Sessions must be actively managed: <span class="a">rotated</span> to prevent fixation, <span class="g">invalidated</span> on logout, and <span class="r">expired</span> after inactivity. A session store like Redis provides fast lookups and TTL-based expiry.</p>
+  <div class="cols cols-2">
+    <div>
+<pre><code class="language-javascript">// Session rotation after login (prevent fixation)
+app.post('/login', async (req, res) => {
+  const user = await authenticate(req.body);
+  if (!user) return res.status(401).end();
+
+  // Regenerate session ID — old ID is invalidated
+  req.session.regenerate((err) => {
+    req.session.userId = user.id;
+    req.session.role = user.role;
+    req.session.loginAt = Date.now();
+    req.session.save(() => res.redirect('/dashboard'));
+  });
+});
+
+// Logout: destroy session
+app.post('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    res.clearCookie('connect.sid');
+    res.redirect('/login');
+  });
+});</code></pre>
+    </div>
+    <div>
+<pre><code class="language-javascript">// Redis session store with TTL
+const RedisStore = require('connect-redis').default;
+const { createClient } = require('redis');
+
+const redisClient = createClient({ url: process.env.REDIS_URL });
+await redisClient.connect();
+
+app.use(session({
+  store: new RedisStore({
+    client: redisClient,
+    prefix: 'sess:',
+    ttl: 1800 // 30 min TTL, auto-renewed on activity
+  }),
+  rolling: true, // reset TTL on every request
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: true, httpOnly: true, maxAge: 1800000 }
+}));
+
+// Force logout all sessions for a user (e.g., password change)
+async function invalidateAllSessions(userId) {
+  const keys = await redisClient.keys('sess:*');
+  for (const key of keys) {
+    const data = JSON.parse(await redisClient.get(key));
+    if (data.userId === userId) await redisClient.del(key);
+  }
+}</code></pre>
+    </div>
+  </div>
+  <div class="cols cols-3" style="margin-top:.2em;">
+    <div class="card amber"><h3>Rotation</h3><p>Regenerate session ID after login, privilege escalation, and password change. Prevents session fixation attacks.</p></div>
+    <div class="card green"><h3>Concurrent Sessions</h3><p>Track active sessions per user. Let users view and revoke sessions (like GitHub/Google "active sessions" page).</p></div>
+    <div class="card blue"><h3>Absolute Timeout</h3><p>Even with rolling TTL, enforce a maximum session lifetime (e.g., 24h). Re-authentication required after absolute expiry.</p></div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 17 — SSO & IDENTITY PROVIDERS ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">17</span><h2>SSO &amp; Identity Providers</h2></div>
+  <p><span class="a">Single Sign-On</span> lets users authenticate once and access multiple applications. The identity is managed by a central <span class="g">Identity Provider (IdP)</span>, and applications (Service Providers) trust the IdP's assertions.</p>
+  <div class="cols cols-3">
+    <div class="card amber">
+      <h3>SAML 2.0</h3>
+      <ul>
+        <li>XML-based, enterprise-focused</li>
+        <li>IdP sends signed <span class="a">SAML Assertion</span> via POST</li>
+        <li>Assertions contain identity + attributes</li>
+        <li>Used by Okta, Azure AD, ADFS</li>
+        <li>Complex but well-established (2005)</li>
+      </ul>
+<pre><code class="language-javascript">// passport-saml
+passport.use(new SamlStrategy({
+  entryPoint: 'https://idp.example.com/sso',
+  issuer: 'my-app',
+  cert: IDP_PUBLIC_CERT,
+  callbackUrl: '/auth/saml/callback'
+}, (profile, done) => {
+  return done(null, profile);
+}));</code></pre>
+    </div>
+    <div class="card green">
+      <h3>OpenID Connect (OIDC)</h3>
+      <ul>
+        <li>Identity layer on top of OAuth 2.0</li>
+        <li>Returns <span class="g">ID Token</span> (JWT) with user claims</li>
+        <li><code>/.well-known/openid-configuration</code> for discovery</li>
+        <li>Standard scopes: <code>openid profile email</code></li>
+        <li>Used by Google, Auth0, Keycloak, Cognito</li>
+      </ul>
+<pre><code class="language-javascript">// ID Token claims
+{
+  "iss": "https://accounts.google.com",
+  "sub": "1104327891",
+  "aud": "my-client-id",
+  "email": "alice@example.com",
+  "name": "Alice Smith",
+  "iat": 1712505600,
+  "exp": 1712509200
+}</code></pre>
+    </div>
+    <div class="card purple">
+      <h3>Federated Identity</h3>
+      <ul>
+        <li>Trust relationships between domains</li>
+        <li>User authenticates at home IdP</li>
+        <li>SP accepts tokens from trusted IdPs</li>
+        <li>Enterprise: Azure AD B2B, Shibboleth</li>
+        <li>Consumer: "Login with Google/Apple"</li>
+      </ul>
+      <div class="card blue" style="margin-top:.2em;">
+        <h3>SAML vs OIDC</h3>
+        <table>
+          <tr><th></th><th>SAML</th><th>OIDC</th></tr>
+          <tr><td>Format</td><td>XML</td><td>JSON/JWT</td></tr>
+          <tr><td>Transport</td><td>POST/Redirect</td><td>HTTP APIs</td></tr>
+          <tr><td>Best for</td><td>Enterprise SSO</td><td>Modern apps</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 18 — COMMON VULNERABILITIES ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">18</span><h2>Common Vulnerabilities</h2></div>
+  <p>Understanding attack vectors is essential for building secure authentication. These are the most frequently exploited weaknesses in web auth systems.</p>
+  <div class="cols cols-2">
+    <div class="card red">
+      <h3>Session Fixation</h3>
+      <ul>
+        <li>Attacker sets victim's session ID before login</li>
+        <li>After victim logs in, attacker uses the same session</li>
+        <li><span class="g">Fix:</span> regenerate session ID on login (<code>req.session.regenerate()</code>)</li>
+      </ul>
+    </div>
+    <div class="card amber">
+      <h3>Token Leakage</h3>
+      <ul>
+        <li>Tokens in URLs, referrer headers, or browser history</li>
+        <li>Logging middleware accidentally logs Authorization headers</li>
+        <li><span class="g">Fix:</span> tokens in headers only, scrub logs, use POST for token exchange</li>
+      </ul>
+    </div>
+    <div class="card purple">
+      <h3>Insecure Storage</h3>
+      <ul>
+        <li>Passwords stored as MD5/SHA-256 (fast hashes)</li>
+        <li>Tokens in <code>localStorage</code> exposed to XSS</li>
+        <li><span class="g">Fix:</span> bcrypt/argon2 for passwords, HttpOnly cookies for tokens</li>
+      </ul>
+    </div>
+    <div class="card blue">
+      <h3>Brute Force &amp; Credential Stuffing</h3>
+      <ul>
+        <li>Automated login attempts with leaked credential lists</li>
+        <li>No rate limiting = unlimited attempts</li>
+        <li><span class="g">Fix:</span> rate limiting, account lockout, CAPTCHA, MFA</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cols cols-2" style="margin-top:.2em;">
+    <div>
+<pre><code class="language-javascript">// Rate limiting with express-rate-limit
+const rateLimit = require('express-rate-limit');
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,                    // 5 attempts per window
+  message: { error: 'Too many login attempts' },
+  standardHeaders: true,
+  keyGenerator: (req) => req.body.email || req.ip
+});
+
+app.post('/login', loginLimiter, loginHandler);</code></pre>
+    </div>
+    <div>
+      <div class="card green">
+        <h3>Defence Checklist</h3>
+        <ul>
+          <li>Rotate session IDs on login and privilege changes</li>
+          <li>Set <code>HttpOnly</code>, <code>Secure</code>, <code>SameSite</code> on all auth cookies</li>
+          <li>Rate-limit login and token endpoints</li>
+          <li>Use <code>helmet</code> for security headers (CSP, HSTS, X-Frame)</li>
+          <li>Implement account lockout with exponential backoff</li>
+          <li>Log failed authentication attempts for monitoring</li>
+          <li>Require MFA for privileged accounts</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 19 — SUMMARY ═══════════════════════════════ -->
+<section>
+  <div class="slide-hdr"><span class="tag">19</span><h2>Summary &amp; Next Steps</h2></div>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Key Takeaways</h3>
+      <ul>
+        <li><span class="a">Authentication</span> proves identity; <span class="g">authorisation</span> grants access</li>
+        <li>Sessions are stateful (server-side); JWTs are stateless (client-side)</li>
+        <li>OAuth 2.0 + PKCE is the standard for third-party auth</li>
+        <li>Always hash passwords with bcrypt, scrypt, or argon2</li>
+        <li>MFA significantly reduces account compromise risk</li>
+        <li>CSRF and CORS are distinct but interconnected concerns</li>
+        <li>Token storage is a trade-off between XSS and CSRF</li>
+        <li>Defence in depth &mdash; no single control is sufficient</li>
+      </ul>
+    </div>
+    <div>
+      <div class="card green">
+        <h3>Recommended Reading</h3>
+        <ul>
+          <li>OWASP Authentication Cheat Sheet</li>
+          <li>OWASP Session Management Cheat Sheet</li>
+          <li>RFC 7519 &mdash; JSON Web Tokens</li>
+          <li>RFC 6749 &mdash; OAuth 2.0 Framework</li>
+          <li>RFC 7636 &mdash; PKCE for OAuth</li>
+          <li>NIST SP 800-63B &mdash; Digital Identity Guidelines</li>
+          <li>Auth0 Blog &mdash; identity architecture articles</li>
+        </ul>
+      </div>
+      <div class="card purple" style="margin-top:.3em;">
+        <h3>Next Steps</h3>
+        <ul>
+          <li>Build a login system with sessions + bcrypt</li>
+          <li>Add JWT access/refresh token rotation</li>
+          <li>Integrate Google OAuth via Passport.js</li>
+          <li>Implement TOTP-based MFA with <code>otplib</code></li>
+          <li>Set up RBAC middleware with permission checks</li>
+          <li>Explore WebAuthn/passkeys for passwordless auth</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="card blue" style="margin-top:.3em;">
+    <h3>Essential npm Packages</h3>
+    <p>
+      <span class="pill amber">bcrypt</span>
+      <span class="pill green">jsonwebtoken</span>
+      <span class="pill purple">passport</span>
+      <span class="pill blue">express-session</span>
+      <span class="pill amber">connect-redis</span>
+      <span class="pill green">cors</span>
+      <span class="pill purple">helmet</span>
+      <span class="pill blue">express-rate-limit</span>
+      <span class="pill amber">otplib</span>
+      <span class="pill green">@simplewebauthn/server</span>
+    </p>
+  </div>
+</section>
+
+
+</div><!-- /slides -->
+</div><!-- /reveal -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/highlight/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/highlight/monokai.min.css">
+<script>
+Reveal.initialize({
+  hash: true,
+  transition: 'fade',
+  transitionSpeed: 'fast',
+  controls: true,
+  progress: true,
+  center: false,
+  width: 1100,
+  height: 900,
+  margin: 0.01,
+  plugins: [RevealHighlight],
+  highlight: { theme: 'monokai' }
+});
+</script>
+<script>
+(function(){
+  var h = Reveal.getConfig().height || 900;
+  var m = Reveal.getConfig().margin || 0.02;
+  var maxH = Math.floor(h * (1 - 2 * m)) + 'px';
+  function fixSlides(){
+    document.querySelectorAll('.reveal .slides>section,.reveal .slides>section>section').forEach(function(s){
+      s.style.display = 'block';
+      s.style.maxHeight = maxH;
+    });
+  }
+  Reveal.on('ready', fixSlides);
+  Reveal.on('slidechanged', fixSlides);
+})();
+</script>
+</body>
+</html>
