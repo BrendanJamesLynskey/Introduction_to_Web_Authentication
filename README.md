@@ -53,6 +53,7 @@ Single self-contained `index.html` — no build step, no npm, no dependencies to
 
 - [Cloud_aaS_04_SaaS_Architecture](https://github.com/BrendanJamesLynskey/Cloud_aaS_04_SaaS_Architecture) — applying these primitives to multi-tenant SaaS (B2B SAML / OIDC / SCIM, Auth-as-a-Service providers).
 - [Introduction to OAuth](https://github.com/BrendanJamesLynskey/Introduction_to_OAuth) — the delegated-authorisation framework in detail.
+- [Introduction to OpenID Connect](https://github.com/BrendanJamesLynskey/Introduction_to_OpenID_Connect) — OIDC as a federated identity layer: ID tokens, discovery, JWKS, CIBA, SIOPv2, FAPI 2.0.
 - [OAuth for MCP](https://github.com/BrendanJamesLynskey/OAuth_for_MCP) — the full Auth-as-a-Service provider tour.
 
 ## References
