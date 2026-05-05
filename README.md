@@ -49,6 +49,12 @@ An interactive Reveal.js presentation covering web authentication — sessions, 
 
 Single self-contained `index.html` — no build step, no npm, no dependencies to install.
 
+## See also
+
+- [Cloud_aaS_04_SaaS_Architecture](https://github.com/BrendanJamesLynskey/Cloud_aaS_04_SaaS_Architecture) — applying these primitives to multi-tenant SaaS (B2B SAML / OIDC / SCIM, Auth-as-a-Service providers).
+- [Introduction to OAuth](https://github.com/BrendanJamesLynskey/Introduction_to_OAuth) — the delegated-authorisation framework in detail.
+- [OAuth for MCP](https://github.com/BrendanJamesLynskey/OAuth_for_MCP) — the full Auth-as-a-Service provider tour.
+
 ## References
 
 OWASP Foundation, *Authentication Cheat Sheet* — cheatsheetseries.owasp.org · OWASP Foundation, *Session Management Cheat Sheet* — cheatsheetseries.owasp.org · Jones et al., *RFC 7519 — JSON Web Token (JWT)*, IETF, 2015 · Hardt, *RFC 6749 — The OAuth 2.0 Authorization Framework*, IETF, 2012 · Sakimura et al., *RFC 7636 — Proof Key for Code Exchange (PKCE)*, IETF, 2015 · NIST, *SP 800-63B — Digital Identity Guidelines*, 2017 · Auth0, *Identity & Security Articles* — auth0.com/blog
