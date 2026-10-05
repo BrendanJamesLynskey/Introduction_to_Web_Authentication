@@ -45,7 +45,7 @@ An interactive Reveal.js presentation covering web authentication — sessions, 
 
 ## Technology
 
-[Reveal.js 4.6](https://revealjs.com) · [highlight.js](https://highlightjs.org) · Playfair Display + DM Sans + JetBrains Mono
+[Reveal.js 4.6](https://revealjs.com) · [highlight.js](https://highlightjs.org) · Marcellus + Hanken Grotesk + Spline Sans Mono
 
 Single self-contained `index.html` — no build step, no npm, no dependencies to install.
 
